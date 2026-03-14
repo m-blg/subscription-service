@@ -103,3 +103,8 @@ To run unit tests:
 make test
 ```
 
+To run integrational api tests:
+```shell
+make api-test
+```
+
