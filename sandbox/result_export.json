@@ -1,0 +1,20 @@
+[
+ {
+  "QUERY PLAN": "Aggregate  (cost=8.18..8.19 rows=1 width=8) (actual time=0.049..0.057 rows=1 loops=1)"
+ },
+ {
+  "QUERY PLAN": "  ->  Index Scan using idx_subs_perf_user_service on subscriptions  (cost=0.15..8.17 rows=1 width=4) (actual time=0.039..0.041 rows=0 loops=1)"
+ },
+ {
+  "QUERY PLAN": "        Index Cond: ((user_id = '60601fee-2bf1-4721-ae6f-7636e79a0cba'::uuid) AND (service_name = 'Yandex Plus'::text) AND (start_date <= '2025-12-31'::date))"
+ },
+ {
+  "QUERY PLAN": "        Filter: ((end_date IS NULL) OR (end_date >= '2025-01-01'::date))"
+ },
+ {
+  "QUERY PLAN": "Planning Time: 1.044 ms"
+ },
+ {
+  "QUERY PLAN": "Execution Time: 0.121 ms"
+ }
+]
