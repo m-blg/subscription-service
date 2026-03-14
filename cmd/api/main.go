@@ -78,15 +78,7 @@ func main() {
 	v1 := router.Group("/api/v1")
 	{
 		subs := v1.Group("/subscriptions")
-		{
-			subs.POST("/", h.Create)
-			subs.GET("/", h.List)
-			subs.GET("/:id", h.GetByID)
-			subs.PUT("/:id", h.Update)
-			subs.DELETE("/:id", h.Delete)
-
-			subs.GET("/total", h.GetTotalCost)
-		}
+		h.DefineRoutesGIN(subs)
 	}
 
 	srv := &http.Server{

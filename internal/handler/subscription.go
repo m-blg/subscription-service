@@ -46,6 +46,16 @@ func (h *SubscriptionHandler) HandleServiceError(c *gin.Context, err error, inte
 	}
 }
 
+func (h *SubscriptionHandler) DefineRoutesGIN(subs *gin.RouterGroup) {
+	subs.POST("/", h.Create)
+	subs.GET("/", h.List)
+	subs.GET("/:id", h.GetByID)
+	subs.PUT("/:id", h.Update)
+	subs.DELETE("/:id", h.Delete)
+
+	subs.GET("/total", h.GetTotalCost)
+}
+
 // CreateSubscription godoc
 // @Summary Create a new subscription
 // @Description Creates a new subscription for a user

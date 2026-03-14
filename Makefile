@@ -2,7 +2,7 @@ APP_NAME=subscription-service
 MAIN_PATH=cmd/api/main.go
 DOCKER_COMPOSE=docker-compose.yaml
 
-.PHONY: run build test migrate-up migrate-down swag docker-up docker-down lint deps
+.PHONY: run build test api-test migrate-up migrate-down swag docker-up docker-down lint deps
 
 run:
 	go run $(MAIN_PATH)
@@ -12,6 +12,11 @@ build:
 
 test:
 	go test -v ./internal/...
+
+api-test:
+	sudo docker compose -f tests/integration/docker-compose.yaml up -d
+	go test -v ./tests/integration/... || (sudo docker compose -f tests/integration/docker-compose.yaml down && exit 1)
+	sudo docker compose -f tests/integration/docker-compose.yaml down
 
 migrate-up:
 	$(GOPATH)/bin/goose up-by-one
