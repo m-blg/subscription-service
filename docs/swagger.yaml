@@ -32,6 +32,8 @@ definitions:
     type: object
   model.Subscription:
     properties:
+      created_at:
+        type: string
       end_date:
         type: string
       id:
@@ -41,6 +43,8 @@ definitions:
       service_name:
         type: string
       start_date:
+        type: string
+      updated_at:
         type: string
       user_id:
         type: string

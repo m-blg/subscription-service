@@ -6,6 +6,15 @@ import (
 	"github.com/google/uuid"
 )
 
+// type Subscription struct {
+// 	ID          uuid.UUID        `json:"id"`
+// 	ServiceName string           `json:"service_name"`
+// 	Price       model.RUB        `json:"price"`
+// 	UserID      uuid.UUID        `json:"user_id"`
+// 	StartDate   model.MonthYear  `json:"start_date"`
+// 	EndDate     *model.MonthYear `json:"end_date,omitempty"`
+// }
+
 type SubscriptionRequest struct {
 	ServiceName string           `json:"service_name" binding:"required"`
 	Price       model.RUB        `json:"price" binding:"required,gt=0"`

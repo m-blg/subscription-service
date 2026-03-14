@@ -353,6 +353,9 @@ const docTemplate = `{
         "model.Subscription": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "end_date": {
                     "type": "string"
                 },
@@ -366,6 +369,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "start_date": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 },
                 "user_id": {
