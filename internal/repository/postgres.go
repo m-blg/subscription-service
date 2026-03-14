@@ -20,12 +20,12 @@ func NewSubscriptionRepo(pool *pgxpool.Pool) *SubscriptionRepo {
 	return &SubscriptionRepo{pool: pool}
 }
 
-// NOTE: Updates `sub.ID` with the generated UUID from the database
+// NOTE: Updates sub with the generated fields from the database
 func (r *SubscriptionRepo) Create(ctx context.Context, sub *model.Subscription) error {
 	query := `
 		INSERT INTO subscriptions (service_name, price, user_id, start_date, end_date)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id`
+		RETURNING id, created_at, updated_at`
 
 	err := r.pool.QueryRow(ctx, query,
 		sub.ServiceName,
@@ -33,7 +33,7 @@ func (r *SubscriptionRepo) Create(ctx context.Context, sub *model.Subscription) 
 		sub.UserID,
 		sub.StartDate,
 		sub.EndDate,
-	).Scan(&sub.ID)
+	).Scan(&sub.ID, &sub.CreatedAt, &sub.UpdatedAt)
 
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (r *SubscriptionRepo) Create(ctx context.Context, sub *model.Subscription) 
 }
 
 func (r *SubscriptionRepo) GetByID(ctx context.Context, id uuid.UUID) (*model.Subscription, error) {
-	query := `SELECT id, service_name, price, user_id, start_date, end_date 
+	query := `SELECT id, service_name, price, user_id, start_date, end_date, created_at, updated_at 
 	          FROM subscriptions WHERE id = $1`
 
 	rows, err := r.pool.Query(ctx, query, id)
@@ -61,7 +61,7 @@ func (r *SubscriptionRepo) GetByID(ctx context.Context, id uuid.UUID) (*model.Su
 
 // if `userID` is provided, filters subscriptions by user ID
 func (r *SubscriptionRepo) List(ctx context.Context, userID *uuid.UUID, limit, offset int) ([]model.Subscription, error) {
-	query := `SELECT id, service_name, price, user_id, start_date, end_date 
+	query := `SELECT id, service_name, price, user_id, start_date, end_date, created_at, updated_at 
 	          FROM subscriptions 
 	          WHERE ($1::UUID IS NULL OR user_id = $1)
 	          ORDER BY start_date DESC
@@ -82,22 +82,24 @@ func (r *SubscriptionRepo) Update(ctx context.Context, sub *model.Subscription) 
 		    price = $2, 
 		    user_id = $3,
 		    start_date = $4, 
-		    end_date = $5 
-		WHERE id = $6`
+		    end_date = $5,
+		    updated_at = CURRENT_TIMESTAMP
+		WHERE id = $6
+		RETURNING updated_at`
 
-	res, err := r.pool.Exec(ctx, query,
+	err := r.pool.QueryRow(ctx, query,
 		sub.ServiceName,
 		sub.Price,
 		sub.UserID,
 		sub.StartDate,
 		sub.EndDate,
 		sub.ID,
-	)
+	).Scan(&sub.UpdatedAt)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return model.ErrNotFound
+		}
 		return err
-	}
-	if res.RowsAffected() == 0 {
-		return model.ErrNotFound
 	}
 	return nil
 }

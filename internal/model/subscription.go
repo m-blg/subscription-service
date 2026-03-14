@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -13,4 +15,6 @@ type Subscription struct {
 	UserID      uuid.UUID  `json:"user_id"`
 	StartDate   MonthYear  `json:"start_date"`
 	EndDate     *MonthYear `json:"end_date,omitempty"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }

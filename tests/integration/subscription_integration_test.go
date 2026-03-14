@@ -127,8 +127,11 @@ func TestSubscriptionLifecycle(t *testing.T) {
 	assert.Equal(t, price, createdSub.Price)
 	assert.Equal(t, userID, createdSub.UserID)
 	assert.NotEqual(t, uuid.Nil, createdSub.ID)
+	assert.False(t, createdSub.CreatedAt.IsZero())
+	assert.False(t, createdSub.UpdatedAt.IsZero())
 
 	subID := createdSub.ID
+	initialUpdatedAt := createdSub.UpdatedAt
 
 	// Get Subscription
 	w = httptest.NewRecorder()
@@ -140,6 +143,7 @@ func TestSubscriptionLifecycle(t *testing.T) {
 	err = json.Unmarshal(w.Body.Bytes(), &fetchedSub)
 	require.NoError(t, err)
 	assert.Equal(t, subID, fetchedSub.ID)
+	assert.Equal(t, initialUpdatedAt.Unix(), fetchedSub.UpdatedAt.Unix())
 
 	// List Subscriptions
 	w = httptest.NewRecorder()
@@ -154,6 +158,7 @@ func TestSubscriptionLifecycle(t *testing.T) {
 	assert.Equal(t, subID, subList[0].ID)
 
 	// Update Subscription
+	time.Sleep(time.Second) // Ensure UpdatedAt will be different
 	newPrice := model.RUB(1200)
 	updateReqBody := handler.SubscriptionRequest{
 		ServiceName: serviceName,
@@ -172,6 +177,7 @@ func TestSubscriptionLifecycle(t *testing.T) {
 	err = json.Unmarshal(w.Body.Bytes(), &updatedSub)
 	require.NoError(t, err)
 	assert.Equal(t, newPrice, updatedSub.Price)
+	assert.True(t, updatedSub.UpdatedAt.After(initialUpdatedAt))
 
 	// Total Cost
 	w = httptest.NewRecorder()

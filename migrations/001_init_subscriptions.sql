@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     user_id      UUID NOT NULL,
     start_date   DATE NOT NULL, -- Store as YYYY-MM-01
     end_date     DATE,
-    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- CREATE INDEX idx_subscriptions_user_service ON subscriptions(user_id, service_name);
