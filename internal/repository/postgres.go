@@ -3,12 +3,14 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"subscription-service/internal/model"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -36,6 +38,10 @@ func (r *SubscriptionRepo) Create(ctx context.Context, sub *model.Subscription) 
 	).Scan(&sub.ID, &sub.CreatedAt, &sub.UpdatedAt)
 
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.ConstraintName == "check_dates_order" {
+			return fmt.Errorf("%w: end date cannot be before start date", model.ErrValidation)
+		}
 		return err
 	}
 	return nil
@@ -98,6 +104,10 @@ func (r *SubscriptionRepo) Update(ctx context.Context, sub *model.Subscription) 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return model.ErrNotFound
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.ConstraintName == "check_dates_order" {
+			return fmt.Errorf("%w: end date cannot be before start date", model.ErrValidation)
 		}
 		return err
 	}

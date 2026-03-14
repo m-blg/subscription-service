@@ -1,7 +1,7 @@
 [
   {
     "service_name": "Netflix",
-    "price": 899,
+    "price": -899,
     "user_id": "60601fee-2bf1-4721-ae6f-7636e79a0cba",
     "start_date": "01-2024"
   },
@@ -9,17 +9,15 @@
     "service_name": "Yandex Plus",
     "price": 299,
     "user_id": "60601fee-2bf1-4721-ae6f-7636e79a0cba",
-    "start_date": "03-2024",
+    "start_date": "03-2026",
     "end_date": "03-2025"
   },
   {
     "service_name": "Yandex Plus",
     "price": 5422,
-    "user_id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
-    "start_date": "12-2023"
+    "user_id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
   },
   {
-    "service_name": "Spotify Premium",
     "price": 169,
     "user_id": "60601fee-2bf1-4721-ae6f-7636e79a0cba",
     "start_date": "07-2025"
@@ -27,7 +25,12 @@
   {
     "service_name": "Test Free Tier",
     "price": 0,
-    "user_id": "b1234567-89ab-cdef-0123-456789abcdef",
     "start_date": "01-2024"
+  },
+  {
+    "service_name": "Yandex Plus",
+    "user_id": "60601fee-2bf1-4721-ae6f-7636e79a0cba",
+    "start_date": "03-2026",
+    "end_date": "03-2025"
   }
 ]

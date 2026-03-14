@@ -36,12 +36,12 @@ To stop containers:
 	make build
 	```
 	The binary will be created in `bin/subscription-service`.
-5. Start db container:
-	```
+4. Start db container:
+	```shell
 	sudo docker compose -f docker-compose.yaml up db --build
 	```
 
-4. Run the app:
+5. Run the app:
 	```shell
 	make run
 	```
@@ -49,15 +49,15 @@ To stop containers:
 	```shell
 	./bin/subscription-service
 	```
-5. The service will be available at http://localhost:8080.
+6. The service will be available at http://localhost:8080.
 
 To stop db container:
-	```
+	```shell
 	make docker-down
 	```
 	Or:
-	```
-	sudo docker compose -f docker-compose.yaml db down
+	```shell
+	sudo docker compose -f docker-compose.yaml down db 
 	```
 
 
@@ -76,6 +76,11 @@ By default migrations applied during service initialization.
 
 ### Manual migration
 
+Start db container:
+```shell
+sudo docker compose -f docker-compose.yaml up db --build -d
+```
+
 To migrate one step up:
 ```shell
 make migrate-up
@@ -84,6 +89,11 @@ make migrate-up
 To migrate one step down:
 ```shell
 make migrate-down
+```
+
+Stop db container:
+```shell
+sudo docker compose -f docker-compose.yaml down db 
 ```
 
 # Testing

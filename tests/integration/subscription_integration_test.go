@@ -206,6 +206,62 @@ func TestSubscriptionLifecycle(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestSubscriptionDateValidation(t *testing.T) {
+	userID := uuid.New()
+	serviceName := "InvalidDates"
+	price := model.RUB(500)
+	startDateStr := "12-2024"
+	endDateStr := "01-2024" // End date before start date
+
+	// Create with invalid dates
+	reqBody := handler.SubscriptionRequest{
+		ServiceName: serviceName,
+		Price:       price,
+		UserID:      userID,
+		StartDate:   parseMonthYear(t, startDateStr),
+		EndDate:     func() *model.MonthYear { my := parseMonthYear(t, endDateStr); return &my }(),
+	}
+
+	jsonReq, _ := json.Marshal(reqBody)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/v1/subscriptions/", bytes.NewBuffer(jsonReq))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	var errResp handler.ErrorResponse
+	err := json.Unmarshal(w.Body.Bytes(), &errResp)
+	require.NoError(t, err)
+	assert.Contains(t, errResp.Error, "end date cannot be before start date")
+
+	// Update with invalid dates
+	// - First create a valid one
+	reqBody.EndDate = nil
+	jsonReq, _ = json.Marshal(reqBody)
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest("POST", "/api/v1/subscriptions/", bytes.NewBuffer(jsonReq))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+	require.Equal(t, http.StatusCreated, w.Code)
+
+	var createdSub model.Subscription
+	err = json.Unmarshal(w.Body.Bytes(), &createdSub)
+	require.NoError(t, err)
+
+	// - Now try to update with invalid dates
+	reqBody.EndDate = func() *model.MonthYear { my := parseMonthYear(t, endDateStr); return &my }()
+	jsonReq, _ = json.Marshal(reqBody)
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest("PUT", "/api/v1/subscriptions/"+createdSub.ID.String(), bytes.NewBuffer(jsonReq))
+	req.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	err = json.Unmarshal(w.Body.Bytes(), &errResp)
+	require.NoError(t, err)
+	assert.Contains(t, errResp.Error, "end date cannot be before start date")
+}
+
 func parseMonthYear(t *testing.T, s string) model.MonthYear {
 	var my model.MonthYear
 	err := my.UnmarshalJSON([]byte(`"` + s + `"`))
